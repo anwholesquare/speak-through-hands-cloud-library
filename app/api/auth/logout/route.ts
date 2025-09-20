@@ -1,10 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const session = await getSession();
   session.destroy();
-  return NextResponse.json({ ok: true });
+  const url = new URL("/auth", req.url);
+  return NextResponse.redirect(url);
+}
+
+export async function GET(req: NextRequest) {
+  const session = await getSession();
+  session.destroy();
+  const url = new URL("/auth", req.url);
+  return NextResponse.redirect(url);
 }
 
 
