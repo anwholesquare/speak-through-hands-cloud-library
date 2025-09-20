@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { VerifyAuthenticationResponseOpts, verifyAuthenticationResponse } from "@simplewebauthn/server";
+import { VerifyAuthenticationResponseOpts, verifyAuthenticationResponse, AuthenticatorTransportFuture } from "@simplewebauthn/server";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 
@@ -25,11 +25,11 @@ export async function POST(req: NextRequest) {
     expectedOrigin: [origin],
     expectedRPID: rpID,
     response,
-    authenticator: {
-      credentialID: Buffer.from(authenticator.credentialID),
-      credentialPublicKey: Buffer.from(authenticator.credentialPublicKey),
+    credential: {
+      id: Buffer.from(authenticator.credentialID).toString('base64url'),
+      publicKey: Buffer.from(authenticator.credentialPublicKey),
       counter: authenticator.counter,
-      transports: (authenticator.transports as any) ?? [],
+      transports: (authenticator.transports as AuthenticatorTransportFuture[]) ?? [],
     },
   };
 

@@ -114,8 +114,6 @@ export default function ListsPage() {
     setLists((prev) => [...prev, list]);
     setNewListTitle("");
   }
-  function renameList(id: string, title: string) { setLists((prev) => prev.map((l) => (l.id === id ? { ...l, title, dirty: true } : l))); }
-  function deleteList(id: string) { setLists((prev) => prev.map((l) => (l.id === id ? { ...l, deleted: true, dirty: true } : l))); if (selectedListId === id) setSelectedListId(null); }
 
   function addItem() {
     if (!selectedListId) return;

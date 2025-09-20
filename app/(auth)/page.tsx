@@ -18,8 +18,8 @@ export default function AuthPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Signup failed");
       window.location.href = "/lists";
-    } catch (e: any) {
-      setError(e?.message || "Signup failed");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Signup failed");
     } finally {
       setBusy(false);
     }
@@ -32,8 +32,8 @@ export default function AuthPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Login failed");
       window.location.href = "/lists";
-    } catch (e: any) {
-      setError(e?.message || "Login failed");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Login failed");
     } finally {
       setBusy(false);
     }

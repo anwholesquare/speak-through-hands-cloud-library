@@ -3,8 +3,13 @@ import { generateRegistrationOptions } from "@simplewebauthn/server";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 
+type RegOptionsBody = { username?: string; displayName?: string };
+
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => ({} as any));
+  const body: RegOptionsBody = await req
+    .json()
+    .then((b) => b as RegOptionsBody)
+    .catch(() => ({} as RegOptionsBody));
   const username: string | undefined = body?.username;
   const displayName: string | undefined = body?.displayName || username;
   if (!username) return NextResponse.json({ error: "username required" }, { status: 400 });
@@ -14,6 +19,9 @@ export async function POST(req: NextRequest) {
 
   const authenticators = await prisma.authenticator.findMany({ where: { userId: user.id } });
 
+  const toB64Url = (buf: Buffer | Uint8Array) =>
+    Buffer.from(buf).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+
   const options = await generateRegistrationOptions({
     rpName: "tudu3",
     rpID: req.nextUrl.hostname,
@@ -22,7 +30,8 @@ export async function POST(req: NextRequest) {
     userName: user.username,
     userDisplayName: user.displayName,
     attestationType: "none",
-    excludeCredentials: authenticators.map((a) => ({ id: a.credentialID, type: "public-key" as const })),
+    // expects base64url string IDs
+    excludeCredentials: authenticators.map((a) => ({ id: toB64Url(a.credentialID) })),
     authenticatorSelection: {
       residentKey: "preferred",
       userVerification: "preferred",

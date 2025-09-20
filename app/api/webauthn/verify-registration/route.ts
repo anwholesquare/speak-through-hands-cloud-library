@@ -23,7 +23,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ verified: false }, { status: 400 });
   }
 
-  const { credentialPublicKey, credentialID, counter, credentialDeviceType, credentialBackedUp, aaguid } = verification.registrationInfo;
+  const { credential, aaguid, credentialDeviceType, credentialBackedUp } = verification.registrationInfo;
+  const { id: credentialID, publicKey: credentialPublicKey, counter } = credential;
 
   const session = await getSession();
   const userId: string | undefined = session.userId;

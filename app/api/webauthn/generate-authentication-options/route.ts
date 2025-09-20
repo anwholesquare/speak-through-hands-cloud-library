@@ -11,9 +11,12 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "user not found" }, { status: 404 });
 
   const authenticators = await prisma.authenticator.findMany({ where: { userId: user.id } });
+  const toB64Url = (buf: Buffer | Uint8Array) =>
+    Buffer.from(buf).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
   const options = await generateAuthenticationOptions({
     rpID: req.nextUrl.hostname,
-    allowCredentials: authenticators.map((a) => ({ id: a.credentialID, type: "public-key" as const })),
+    // expects base64url string IDs
+    allowCredentials: authenticators.map((a) => ({ id: toB64Url(a.credentialID) })),
     userVerification: "preferred",
   });
 

@@ -1,4 +1,4 @@
-import { IronSessionOptions, getIronSession } from "iron-session";
+import { SessionOptions, getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 
 export type SessionData = {
@@ -6,7 +6,7 @@ export type SessionData = {
   username?: string;
 };
 
-const sessionOptions: IronSessionOptions = {
+const sessionOptions: SessionOptions = {
   password: process.env.SESSION_SECRET || "insecure-development-secret-change-me",
   cookieName: "tudu3_session",
   cookieOptions: {
