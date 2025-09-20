@@ -28,7 +28,7 @@ npm run dev
 ```
 
 ## Auth (Passkeys)
-- Sign up or login with WebAuthn on `/(auth)`.
+- Sign up or login with WebAuthn on `/auth`.
 - Uses `@simplewebauthn` and cookie session.
 
 ## API
