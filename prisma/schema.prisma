@@ -24,6 +24,7 @@ model User {
 
   authenticators Authenticator[]
   todos          Todo[]
+  lists          List[]
 }
 
 model Authenticator {
@@ -64,4 +65,37 @@ model Todo {
   updatedAt  DateTime @updatedAt
 
   @@index([userId])
+}
+
+model List {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+
+  title      String
+  // Optional placement for horizontal layout
+  posX       Float    @default(0)
+  posZ       Float    @default(0)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  items      Item[]
+
+  @@index([userId])
+}
+
+model Item {
+  id         String   @id @default(cuid())
+  list       List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  listId     String
+
+  title      String
+  completed  Boolean  @default(false)
+  sortOrder  Int      @default(0)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([listId])
 }

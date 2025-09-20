@@ -5,25 +5,23 @@ import { getSession } from "@/lib/session";
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession();
   if (!session.userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const body = await req.json();
-  const data: { title?: string; completed?: boolean } = {};
+  const body = await req.json().catch(() => ({}));
+  const data: { title?: string; posX?: number; posZ?: number } = {};
   if (typeof body?.title === "string") data.title = body.title;
-  if (typeof body?.completed === "boolean") data.completed = body.completed;
-  if (!("title" in data) && !("completed" in data)) return NextResponse.json({ error: "nothing to update" }, { status: 400 });
-
-  // Ensure ownership before update
-  const existing = await prisma.todo.findUnique({ where: { id: params.id } });
+  if (typeof body?.posX === "number") data.posX = body.posX;
+  if (typeof body?.posZ === "number") data.posZ = body.posZ;
+  const existing = await prisma.list.findUnique({ where: { id: params.id } });
   if (!existing || existing.userId !== session.userId) return NextResponse.json({ error: "forbidden" }, { status: 403 });
-
-  const updated = await prisma.todo.update({ where: { id: params.id }, data });
+  const updated = await prisma.list.update({ where: { id: params.id }, data });
   return NextResponse.json(updated);
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession();
   if (!session.userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const deleted = await prisma.todo.delete({ where: { id: params.id } });
-  if (deleted.userId !== session.userId) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const existing = await prisma.list.findUnique({ where: { id: params.id } });
+  if (!existing || existing.userId !== session.userId) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  await prisma.list.delete({ where: { id: params.id } });
   return NextResponse.json({ ok: true });
 }
 
