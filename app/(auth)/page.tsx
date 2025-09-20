@@ -17,7 +17,7 @@ export default function AuthPage() {
       const res = await fetch("/api/auth/signup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, displayName, password }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Signup failed");
-      window.location.href = "/";
+      window.location.href = "/lists";
     } catch (e: any) {
       setError(e?.message || "Signup failed");
     } finally {
@@ -31,7 +31,7 @@ export default function AuthPage() {
       const res = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Login failed");
-      window.location.href = "/";
+      window.location.href = "/lists";
     } catch (e: any) {
       setError(e?.message || "Login failed");
     } finally {
