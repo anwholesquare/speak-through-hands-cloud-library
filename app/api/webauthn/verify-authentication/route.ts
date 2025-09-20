@@ -5,11 +5,15 @@ import { getSession } from "@/lib/session";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { expectedChallenge, response, userId } = body || {};
-  if (!response || !expectedChallenge || !userId) return NextResponse.json({ error: "invalid body" }, { status: 400 });
+  const { expectedChallenge, response } = body || {};
+  if (!response || !expectedChallenge) return NextResponse.json({ error: "invalid body" }, { status: 400 });
+
+  // rawId is ArrayBuffer in WebAuthn. Ensure Buffer for lookup.
+  const rawId: ArrayBuffer = response.rawId;
+  const credentialID = Buffer.from(new Uint8Array(rawId));
 
   const authenticator = await prisma.authenticator.findFirst({
-    where: { userId, credentialID: Buffer.from(response.rawId, "base64url") },
+    where: { credentialID },
   });
   if (!authenticator) return NextResponse.json({ error: "credential not found" }, { status: 404 });
 
@@ -38,7 +42,7 @@ export async function POST(req: NextRequest) {
   });
 
   const session = await getSession();
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { id: authenticator.userId } });
   if (!user) return NextResponse.json({ error: "user not found" }, { status: 404 });
   session.userId = user.id;
   session.username = user.username;

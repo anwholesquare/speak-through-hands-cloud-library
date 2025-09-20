@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { VerifyRegistrationResponseOpts, verifyRegistrationResponse } from "@simplewebauthn/server";
 import { prisma } from "@/lib/db";
+import { getSession } from "@/lib/session";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -24,8 +25,9 @@ export async function POST(req: NextRequest) {
 
   const { credentialPublicKey, credentialID, counter, credentialDeviceType, credentialBackedUp, aaguid } = verification.registrationInfo;
 
-  const userId: string | undefined = body?.userId;
-  if (!userId) return NextResponse.json({ error: "missing user" }, { status: 400 });
+  const session = await getSession();
+  const userId: string | undefined = session.userId;
+  if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   await prisma.authenticator.create({
     data: {

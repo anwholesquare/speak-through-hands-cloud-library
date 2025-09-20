@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
   const options = await generateRegistrationOptions({
     rpName: "tudu3",
     rpID: req.nextUrl.hostname,
-    userID: user.id,
+    // userID must be a BufferSource per @simplewebauthn >= v10
+    userID: Buffer.from(user.id, "utf8"),
     userName: user.username,
     userDisplayName: user.displayName,
     attestationType: "none",

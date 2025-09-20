@@ -25,7 +25,7 @@ export default function AuthPage() {
       const verify = await fetch("/api/webauthn/verify-registration", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ expectedChallenge: regOpts.challenge, response: attResp, userId: regOpts.user?.id ?? regOpts.userId ?? undefined }),
+        body: JSON.stringify({ expectedChallenge: regOpts.challenge, response: attResp }),
       }).then((r) => r.json());
 
       if (!verify.verified) throw new Error("Registration failed");
@@ -51,7 +51,7 @@ export default function AuthPage() {
       const verify = await fetch("/api/webauthn/verify-authentication", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ expectedChallenge: authOpts.challenge, response: assertion, userId: authOpts.userId }),
+        body: JSON.stringify({ expectedChallenge: authOpts.challenge, response: assertion }),
       }).then((r) => r.json());
 
       if (!verify.verified) throw new Error("Login failed");
