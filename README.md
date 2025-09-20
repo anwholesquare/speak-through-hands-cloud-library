@@ -27,9 +27,9 @@ npx prisma db push
 npm run dev
 ```
 
-## Auth (Passkeys)
-- Sign up or login with WebAuthn on `/auth`.
-- Uses `@simplewebauthn` and cookie session.
+## Auth
+- Sign up or login with username/password on `/auth`.
+- Uses bcryptjs for hashing and a cookie session via `iron-session`.
 
 ## API
 - `POST /api/webauthn/generate-registration-options`
